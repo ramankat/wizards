@@ -1,1 +1,1 @@
-web: java -jar target/wizards-0.0.1-SNAPSHOT.jar
+web: java $JAVA_OPTS -jar target/wizards-0.0.1-SNAPSHOT.jar
