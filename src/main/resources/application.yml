@@ -1,0 +1,24 @@
+server:
+  port: 8080
+  servlet:
+    contextPath: /api
+
+spring:
+  application:
+    name: wizards
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://mysql-ecommims-nonprod.mysql.database.azure.com:3306/imsservice_dev?sslmode=require&sslrootcert='BaltimoreCyberTrustRoot.crt'
+    username: imsservice_dev_usr
+    password: v80Dd5ib48lYC8JLIqXLeA==
+    host_url: mysql-ecommims-nonprod.mysql.database.azure.com
+    db_name: imsservice_dev
+    db_port: 3306
+    type: com.zaxxer.hikari.HikariDataSource
+    hikari:
+      pool-name: HikariCorePool
+      connection-timeout: 50000
+      maximum-pool-size: 80
+      minimum-idle: 20
+      idle-timeout: 40000
+      auto-commit: true
