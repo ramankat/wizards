@@ -7,18 +7,16 @@ spring:
   application:
     name: wizards
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://mysql-ecommims-nonprod.mysql.database.azure.com:3306/imsservice_dev?sslmode=require&sslrootcert='BaltimoreCyberTrustRoot.crt'
-    username: imsservice_dev_usr
-    password: v80Dd5ib48lYC8JLIqXLeA==
-    host_url: mysql-ecommims-nonprod.mysql.database.azure.com
-    db_name: imsservice_dev
-    db_port: 3306
-    type: com.zaxxer.hikari.HikariDataSource
+    url: jdbc:postgresql://cat670aihdrkt1.cluster-czrs8kj4isg7.us-east-1.rds.amazonaws.com:5432/ddiiknknre9vvs?sslmode=require
+    username: u7rfuaauju6l63
+    password: pe37f56daa3b50383b3f8c69e42dacb4a674696d2001495ea0e48c80c78b84e50
     hikari:
-      pool-name: HikariCorePool
-      connection-timeout: 50000
-      maximum-pool-size: 80
-      minimum-idle: 20
-      idle-timeout: 40000
-      auto-commit: true
+      connection-timeout: 20000
+      maximum-pool-size: 8
+      minimum-idle: 2
+      idle-timeout: 20000
+  jpa:
+    properties:
+      hibernate:
+        default_schema: public
+    hibernate.ddl-auto: none
