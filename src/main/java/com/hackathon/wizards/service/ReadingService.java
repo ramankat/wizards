@@ -10,7 +10,7 @@ public interface ReadingService {
 
     List<Reading> getAllReadings();
 
-    Reading getReadingDetail(Long id);
+    Reading getReadingDetail(Long id, Integer dataPoints);
 
 
 }

@@ -37,9 +37,9 @@ public class ReadingController {
         return new ResponseEntity<>(readingService.getAllReadings(), HttpStatus.OK);
     }
 
-    @GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Reading> getReadingDetail(@PathVariable Long id) {
-        return new ResponseEntity<>(readingService.getReadingDetail(id), HttpStatus.OK);
+    @GetMapping(path = "/{id}/{dataPoints}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Reading> getReadingDetail(@PathVariable Long id, @PathVariable Integer dataPoints) {
+        return new ResponseEntity<>(readingService.getReadingDetail(id, dataPoints), HttpStatus.OK);
     }
 
 }
