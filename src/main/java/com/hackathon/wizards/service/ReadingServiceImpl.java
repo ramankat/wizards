@@ -96,10 +96,10 @@ public class ReadingServiceImpl implements ReadingService {
 
         ReadingAud readingAud = new ReadingAud();
         readingAud.setDeviceId(readingRequest.getDeviceId());
-        readingAud.setAqi(readingRequest.getAqi());
-        readingAud.setPressure(readingRequest.getPressure());
-        readingAud.setTemperature(readingRequest.getTemperature());
-        readingAud.setHumidity(readingRequest.getHumidity());
+        readingAud.setAqi(readingRequest.getAqi() + delta);
+        readingAud.setPressure(readingRequest.getPressure() + delta);
+        readingAud.setTemperature(readingRequest.getTemperature() + delta);
+        readingAud.setHumidity(readingRequest.getHumidity() + delta);
         readingAud.setLongitude(readingRequest.getLongitude());
         readingAud.setLatitude(readingRequest.getLatitude());
         readingAud.setSosAlert(readingRequest.getSosAlert());
