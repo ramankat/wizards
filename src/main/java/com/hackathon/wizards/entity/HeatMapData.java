@@ -1,6 +1,7 @@
 package com.hackathon.wizards.entity;
 
 import jakarta.persistence.*;
+import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -8,6 +9,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "heat_map_data")
+@Data
 public class HeatMapData {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
