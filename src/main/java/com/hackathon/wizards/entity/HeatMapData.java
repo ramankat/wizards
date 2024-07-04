@@ -27,9 +27,6 @@ public class HeatMapData {
     @Column(name = "longitude", precision = 9)
     private Double longitude;
 
-    @Column(name = "alert_type", length = 50)
-    private String alertType;
-
     @Column(name = "alert_count")
     private Integer alertCount;
 

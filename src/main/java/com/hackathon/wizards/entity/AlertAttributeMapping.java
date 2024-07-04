@@ -10,26 +10,27 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "alert")
+@Table(name = "alert_attribute_mapping")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Alert {
+public class AlertAttributeMapping {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "device_id", nullable = false)
-    private Integer deviceId;
+    @Column(name = "alert_id")
+    private Long alertId;
 
-    @Column(name = "timestamp", nullable = false)
-    private LocalDateTime timestamp;
+    @Column(name = "alert_type", length = 50)
+    private String alertType;
 
-    @Column(name = "latitude", precision = 9)
-    private Double latitude;
+    @Column(name = "value", precision = 10)
+    private Double value;
 
-    @Column(name = "longitude", precision = 9)
-    private Double longitude;
+    @Column(name = "threshold_value", precision = 10)
+    private Double thresholdValue;
 
     @CreationTimestamp
     @Column(name = "created_at")
@@ -41,5 +42,4 @@ public class Alert {
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime updatedAt;
 
-    // Getters and setters
 }

@@ -23,7 +23,7 @@ public class Reading {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "device_id", nullable = false)
+    @Column(name = "device_id", unique = true ,nullable = false)
     private Integer deviceId;
 
     @Column(name = "timestamp", nullable = false)
@@ -38,6 +38,9 @@ public class Reading {
     @Column(name = "pressure", precision = 6)
     private Double pressure;
 
+    @Column(name = "humidity", precision = 6)
+    private Double humidity;
+
     @Column(name = "latitude", precision = 9)
     private Double latitude;
 
@@ -45,7 +48,7 @@ public class Reading {
     private Double longitude;
 
     @Column(name = "sos_alert")
-    private boolean sosAlert;
+    private Boolean sosAlert;
 
     @Column(name = "altitude")
     private Double altitude;
