@@ -1,29 +1,34 @@
 package com.hackathon.wizards.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.hibernate.envers.Audited;
-
-import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "reading")
+@Table(name = "reading_audit")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 //@Audited
 @Builder
-public class Reading {
+public class ReadingAud {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "device_id", unique = true ,nullable = false)
+    @Column(name = "device_id" ,nullable = false)
     private Integer deviceId;
 
     @Column(name = "timestamp", nullable = false)
@@ -62,5 +67,4 @@ public class Reading {
     @Column(name = "updated_at")
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime updatedAt;
-
 }

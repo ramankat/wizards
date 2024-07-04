@@ -27,6 +27,9 @@ public class ReadingServiceImpl implements ReadingService {
     private ReadingRepository readingRepository;
 
     @Autowired
+    private ReadingAuditRepository readingAuditRepository;
+
+    @Autowired
     private AlertThresholdRepository alertThresholdRepository;
 
     @Autowired
@@ -65,6 +68,19 @@ public class ReadingServiceImpl implements ReadingService {
         if (sendAlertFlag){
             populateHeatData(existingReading);
         }
+
+        ReadingAud readingAud = new ReadingAud();
+        readingAud.setDeviceId(readingRequest.getDeviceId());
+        readingAud.setAqi(readingRequest.getAqi());
+        readingAud.setPressure(readingRequest.getPressure());
+        readingAud.setTemperature(readingRequest.getTemperature());
+        readingAud.setHumidity(readingRequest.getHumidity());
+        readingAud.setLongitude(readingRequest.getLongitude());
+        readingAud.setLatitude(readingRequest.getLatitude());
+        readingAud.setSosAlert(readingRequest.getSosAlert());
+        readingAud.setTimestamp(LocalDateTime.now());
+        readingAud.setAltitude(readingRequest.getAltitude());
+        readingAuditRepository.save(readingAud);
     }
 
     private void populateHeatData(Reading existingReading) {
