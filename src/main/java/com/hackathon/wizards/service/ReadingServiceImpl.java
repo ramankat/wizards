@@ -308,9 +308,13 @@ public class ReadingServiceImpl implements ReadingService {
         for(ReadingAud readingAud: readingAuds) {
             LocalDateTime alertTime = readingAud.getCreatedAt();
             LocalDateTime floorTime = LocalDateTime.of(alertTime.getYear(), alertTime.getMonth(), alertTime.getDayOfMonth(), 0, 0);
+            pressureMap.putIfAbsent(floorTime, new ArrayList<>());
             pressureMap.get(floorTime).add(readingAud.getPressure());
+            temparatureMap.putIfAbsent(floorTime, new ArrayList<>());
             temparatureMap.get(floorTime).add(readingAud.getTemperature());
+            aqiMap.putIfAbsent(floorTime, new ArrayList<>());
             aqiMap.get(floorTime).add(Double.valueOf(readingAud.getAqi()));
+            humidityMap.putIfAbsent(floorTime, new ArrayList<>());
             humidityMap.get(floorTime).add(readingAud.getHumidity());
         }
 
