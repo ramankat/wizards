@@ -2,7 +2,6 @@ package com.hackathon.wizards.dto;
 
 import com.hackathon.wizards.entity.Reading;
 import java.util.List;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data

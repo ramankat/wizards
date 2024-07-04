@@ -1,6 +1,7 @@
 package com.hackathon.wizards.controller;
 
 
+import com.hackathon.wizards.dto.DeviceData;
 import com.hackathon.wizards.dto.ReadingRequest;
 import com.hackathon.wizards.entity.Reading;
 import com.hackathon.wizards.service.ReadingService;
@@ -38,7 +39,7 @@ public class ReadingController {
     }
 
     @GetMapping(path = "/{id}/{dataPoints}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Reading> getReadingDetail(@PathVariable Long id, @PathVariable Integer dataPoints) {
+    public ResponseEntity<DeviceData> getReadingDetail(@PathVariable Long id, @PathVariable Integer dataPoints) {
         return new ResponseEntity<>(readingService.getReadingDetail(id, dataPoints), HttpStatus.OK);
     }
 

@@ -1,5 +1,6 @@
 package com.hackathon.wizards.service;
 
+import com.hackathon.wizards.dto.DeviceData;
 import com.hackathon.wizards.dto.ReadingRequest;
 import com.hackathon.wizards.entity.Reading;
 import java.util.List;
@@ -10,7 +11,7 @@ public interface ReadingService {
 
     List<Reading> getAllReadings();
 
-    Reading getReadingDetail(Long id, Integer dataPoints);
+    DeviceData getReadingDetail(Long id, Integer dataPoints);
 
 
 }

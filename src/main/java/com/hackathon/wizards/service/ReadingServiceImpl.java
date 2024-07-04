@@ -1,13 +1,16 @@
 package com.hackathon.wizards.service;
 
 import com.hackathon.wizards.dto.DeviceData;
+import com.hackathon.wizards.dto.ParamDataPoint;
 import com.hackathon.wizards.dto.ReadingRequest;
 import com.hackathon.wizards.entity.Reading;
 import com.hackathon.wizards.repository.ReadingRepository;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import com.hackathon.wizards.entity.*;
 import com.hackathon.wizards.repository.*;
@@ -182,18 +185,42 @@ public class ReadingServiceImpl implements ReadingService {
     }
 
     @Override
-    public Reading getReadingDetail(Long id, Integer dataPoints) {
+    public DeviceData getReadingDetail(Long id, Integer dataPoints) {
+        DeviceData deviceData = new DeviceData();
         try {
             log.info("getting reading data for device id {}", id);
             Optional<Reading> readingDetail = readingRepository.findById(id);
-            DeviceData deviceData = new DeviceData();
             deviceData.setCurrReading(readingDetail.get());
             List<ReadingAud> readingAuds = readingAuditRepository.findLastNPoints(id, dataPoints);
-
+            deviceData.setAqiGraph(new ArrayList<>());
+            deviceData.setTemperatureGraph(new ArrayList<>());
+            deviceData.setHumidityGraph(new ArrayList<>());
+            deviceData.setPressureGraph(new ArrayList<>());
+            double aqiSum = 0.0d;
+            double temperatureSum = 0.0d;
+            double humiditySum = 0.0d;
+            double pressureSum = 0.0d;
+            readingAuds.stream().sorted(Comparator.comparing(ReadingAud::getCreatedAt)).forEach(readingAud -> {
+                deviceData.getHumidityGraph().add(new ParamDataPoint(readingAud.getCreatedAt(), readingAud.getHumidity()));
+                deviceData.getTemperatureGraph().add(new ParamDataPoint(readingAud.getCreatedAt(), readingAud.getTemperature()));
+                deviceData.getPressureGraph().add(new ParamDataPoint(readingAud.getCreatedAt(), readingAud.getPressure()));
+                deviceData.getAqiGraph().add(new ParamDataPoint(readingAud.getCreatedAt(), Double.valueOf(readingAud.getAqi())));
+            });
+            for(ReadingAud readingAud : readingAuds) {
+                aqiSum += readingAud.getAqi();
+                temperatureSum += readingAud.getTemperature();
+                humiditySum += readingAud.getHumidity();
+                pressureSum += readingAud.getPressure();
+            }
+            double points = readingAuds.size();
+            deviceData.setAvgAqi(aqiSum / points);
+            deviceData.setAvgHumidity(humiditySum / points);
+            deviceData.setAvgPressure(pressureSum / points);
+            deviceData.setAvgTemperature(temperatureSum / points);
         } catch (Exception ex) {
             log.error("Error {} occurred while fetching reading detail", ex.getMessage());
             throw ex;
         }
-        return new Reading();
+        return deviceData;
     }
 }

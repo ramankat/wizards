@@ -10,6 +10,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ReadingAuditRepository  extends JpaRepository<ReadingAud, Long>  {
 
-    @Query(value = "select TOP :dataPoints * from reading_audit ra where ra.device_id = :id order by created_at desc", nativeQuery = true)
+    @Query(value = "select * from reading_audit ra where ra.device_id = :id order by created_at desc limit :dataPoints", nativeQuery = true)
     List<ReadingAud> findLastNPoints(@Param("id") Long id, @Param("dataPoints") Integer dataPoints);
 }
