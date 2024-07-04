@@ -17,4 +17,9 @@ public class DeviceData {
     private Double avgTemperature;
     private Double avgPressure;
     private Double avgAqi;
+
+    private Double medianHumidity;
+    private Double medianTemperature;
+    private Double medianPressure;
+    private Double medianAqi;
 }

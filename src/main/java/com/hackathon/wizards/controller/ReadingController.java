@@ -3,6 +3,7 @@ package com.hackathon.wizards.controller;
 
 import com.hackathon.wizards.dto.AlertChart;
 import com.hackathon.wizards.dto.DeviceData;
+import com.hackathon.wizards.dto.MeanData;
 import com.hackathon.wizards.dto.ReadingRequest;
 import com.hackathon.wizards.entity.Reading;
 import com.hackathon.wizards.service.ReadingService;
@@ -43,6 +44,11 @@ public class ReadingController {
     @GetMapping(path = "/alerts/{days}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<AlertChart> getAlertsChart(@PathVariable Integer days) {
         return new ResponseEntity<>(readingService.getAlertsChart(days), HttpStatus.OK);
+    }
+
+    @GetMapping(path = "/mean/{days}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<MeanData> getMeanData(@PathVariable Integer days) {
+        return new ResponseEntity<>(readingService.getMeanChart(days), HttpStatus.OK);
     }
 
 }

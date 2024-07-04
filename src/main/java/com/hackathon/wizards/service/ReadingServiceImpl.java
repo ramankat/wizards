@@ -3,6 +3,7 @@ package com.hackathon.wizards.service;
 import com.hackathon.wizards.dto.AlertChart;
 import com.hackathon.wizards.dto.AlertDataPoint;
 import com.hackathon.wizards.dto.DeviceData;
+import com.hackathon.wizards.dto.MeanData;
 import com.hackathon.wizards.dto.ParamDataPoint;
 import com.hackathon.wizards.dto.ReadingRequest;
 import com.hackathon.wizards.entity.Reading;
@@ -10,6 +11,7 @@ import com.hackathon.wizards.repository.ReadingRepository;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
@@ -213,7 +215,16 @@ public class ReadingServiceImpl implements ReadingService {
                 deviceData.getPressureGraph().add(new ParamDataPoint(readingAud.getCreatedAt(), readingAud.getPressure()));
                 deviceData.getAqiGraph().add(new ParamDataPoint(readingAud.getCreatedAt(), Double.valueOf(readingAud.getAqi())));
             });
+            List<Double> aqiList = new ArrayList<>();
+            List<Double> temparatureList = new ArrayList<>();
+            List<Double> humidityList = new ArrayList<>();
+            List<Double> pressureList = new ArrayList<>();
             for(ReadingAud readingAud : readingAuds) {
+                aqiList.add(Double.valueOf(readingAud.getAqi()));
+                temparatureList.add(readingAud.getTemperature());
+                humidityList.add(readingAud.getHumidity());
+                pressureList.add(readingAud.getPressure());
+
                 aqiSum += readingAud.getAqi();
                 temperatureSum += readingAud.getTemperature();
                 humiditySum += readingAud.getHumidity();
@@ -224,6 +235,11 @@ public class ReadingServiceImpl implements ReadingService {
             deviceData.setAvgHumidity(humiditySum / points);
             deviceData.setAvgPressure(pressureSum / points);
             deviceData.setAvgTemperature(temperatureSum / points);
+
+            deviceData.setMedianAqi(findMedian(aqiList));
+            deviceData.setMedianPressure(findMedian(pressureList));
+            deviceData.setMedianHumidity(findMedian(humidityList));
+            deviceData.setMedianTemperature(findMedian(temparatureList));
         } catch (Exception ex) {
             log.error("Error {} occurred while fetching reading detail", ex.getMessage());
             throw ex;
@@ -256,5 +272,95 @@ public class ReadingServiceImpl implements ReadingService {
         }
         alertChart.setAlerts(alertDataPointList);
         return alertChart;
+    }
+
+    @Override
+    public MeanData getMeanChart(Integer days) {
+        LocalDate localDate = LocalDate.now().minusDays(days);
+        LocalDateTime localDateTime = LocalDateTime.of(localDate.getYear(), localDate.getMonth(), localDate.getDayOfMonth(), 0, 0);
+        List<ReadingAud> readingAuds = readingAuditRepository.findAllByCreatedAtGreaterThan(localDateTime);
+        Map<LocalDateTime, List<Double>> pressureMap = new HashMap<>();
+        Map<LocalDateTime, List<Double>> temparatureMap = new HashMap<>();
+        Map<LocalDateTime, List<Double>> aqiMap = new HashMap<>();
+        Map<LocalDateTime, List<Double>> humidityMap = new HashMap<>();
+
+        LocalDateTime start = LocalDateTime.of(localDate.getYear(), localDate.getMonth(), localDate.getDayOfMonth(), 0, 0);
+        while(start.isBefore(LocalDateTime.now())) {
+            pressureMap.put(start, new ArrayList<>());
+            temparatureMap.put(start, new ArrayList<>());
+            aqiMap.put(start, new ArrayList<>());
+            humidityMap.put(start, new ArrayList<>());
+            start = start.plusDays(1);
+        }
+
+        for(ReadingAud readingAud: readingAuds) {
+            LocalDateTime alertTime = readingAud.getCreatedAt();
+            LocalDateTime floorTime = LocalDateTime.of(alertTime.getYear(), alertTime.getMonth(), alertTime.getDayOfMonth(), 0, 0);
+            pressureMap.get(floorTime).add(readingAud.getPressure());
+            temparatureMap.get(floorTime).add(readingAud.getTemperature());
+            aqiMap.get(floorTime).add(Double.valueOf(readingAud.getAqi()));
+            humidityMap.get(floorTime).add(readingAud.getHumidity());
+        }
+
+        MeanData meanData = new MeanData();
+        meanData.setAqiGraph(new ArrayList<>());
+        meanData.setTemperatureGraph(new ArrayList<>());
+        meanData.setHumidityGraph(new ArrayList<>());
+        meanData.setPressureGraph(new ArrayList<>());
+
+        meanData.setAqiMedianGraph(new ArrayList<>());
+        meanData.setTemperatureMedianGraph(new ArrayList<>());
+        meanData.setHumidityMedianGraph(new ArrayList<>());
+        meanData.setPressureMedianGraph(new ArrayList<>());
+        for(LocalDateTime dateTime: pressureMap.keySet()) {
+            double count = pressureMap.get(dateTime).size() * 1.0d;
+            meanData.getPressureGraph().add(new ParamDataPoint(dateTime,
+                    findMean(pressureMap.get(dateTime))));
+            meanData.getTemperatureGraph().add(new ParamDataPoint(dateTime,
+                    findMean(temparatureMap.get(dateTime))));
+            meanData.getAqiGraph().add(new ParamDataPoint(dateTime,
+                    findMean(aqiMap.get(dateTime))));
+            meanData.getHumidityGraph().add(new ParamDataPoint(dateTime,
+                    findMean(humidityMap.get(dateTime))));
+
+            meanData.getPressureMedianGraph().add(new ParamDataPoint(dateTime,
+                    findMedian(pressureMap.get(dateTime))));
+            meanData.getTemperatureMedianGraph().add(new ParamDataPoint(dateTime,
+                    findMedian(temparatureMap.get(dateTime))));
+            meanData.getAqiMedianGraph().add(new ParamDataPoint(dateTime,
+                    findMedian(aqiMap.get(dateTime))));
+            meanData.getHumidityMedianGraph().add(new ParamDataPoint(dateTime,
+                    findMedian(humidityMap.get(dateTime))));
+        }
+        return meanData;
+    }
+
+    public static double findMedian(List<Double> list)
+    {
+        if(list == null || list.size() == 0) {
+            return 0.0d;
+        }
+        int n = list.size();
+        // First we sort the array
+        Collections.sort(list);
+
+        // check for even case
+        if (n % 2 != 0)
+            return list.get(n/2);
+
+        return (double)(list.get((n - 1) / 2) + list.get(n / 2)) / 2.0;
+    }
+
+    public static double findMean(List<Double> list)
+    {
+        if(list == null || list.size() == 0) {
+            return 0.0d;
+        }
+        int n = list.size();
+        int sum = 0;
+        for (int i = 0; i < n; i++)
+            sum += list.get(i);
+
+        return (double)sum / (double)n;
     }
 }
