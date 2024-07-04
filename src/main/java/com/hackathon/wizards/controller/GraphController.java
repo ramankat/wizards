@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping(path="v1/graph")
-@CrossOrigin(origins = "/*")
+@CrossOrigin(origins = "*")
 @Slf4j
 public class GraphController {
 
