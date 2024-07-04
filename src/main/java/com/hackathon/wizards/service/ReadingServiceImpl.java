@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+
+import java.util.*;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import com.hackathon.wizards.entity.*;
@@ -58,16 +60,26 @@ public class ReadingServiceImpl implements ReadingService {
     @Override
     @Transactional
     public void saveReading(ReadingRequest readingRequest) {
+        saveReadingDate(readingRequest, 0);
+        Random random = new Random();
+        readingRequest.setDeviceId(2);
+        saveReadingDate(readingRequest, random.ints(-10, 10).findFirst().getAsInt());
+        readingRequest.setDeviceId(3);
+        saveReadingDate(readingRequest, random.ints(-10, 10).findFirst().getAsInt());
+
+    }
+
+    private void saveReadingDate(ReadingRequest readingRequest, int delta){
         Reading existingReading = readingRepository.findAllByDeviceId(readingRequest.getDeviceId());
         if(Objects.isNull(existingReading)){
             existingReading = new Reading();
 
         }
         existingReading.setDeviceId(readingRequest.getDeviceId());
-        existingReading.setAqi(readingRequest.getAqi());
-        existingReading.setPressure(readingRequest.getPressure());
-        existingReading.setTemperature(readingRequest.getTemperature());
-        existingReading.setHumidity(readingRequest.getHumidity());
+        existingReading.setAqi(readingRequest.getAqi() + delta);
+        existingReading.setPressure(readingRequest.getPressure() + delta);
+        existingReading.setTemperature(readingRequest.getTemperature() + delta);
+        existingReading.setHumidity(readingRequest.getHumidity() + delta);
         existingReading.setLongitude(readingRequest.getLongitude());
         existingReading.setLatitude(readingRequest.getLatitude());
         existingReading.setSosAlert(readingRequest.getSosAlert());
