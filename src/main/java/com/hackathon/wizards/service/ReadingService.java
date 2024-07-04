@@ -1,5 +1,6 @@
 package com.hackathon.wizards.service;
 
+import com.hackathon.wizards.dto.AlertChart;
 import com.hackathon.wizards.dto.DeviceData;
 import com.hackathon.wizards.dto.ReadingRequest;
 import com.hackathon.wizards.entity.Reading;
@@ -13,5 +14,5 @@ public interface ReadingService {
 
     DeviceData getReadingDetail(Long id, Integer dataPoints);
 
-
+    AlertChart getAlertsChart(Integer days);
 }

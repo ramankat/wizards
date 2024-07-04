@@ -1,13 +1,20 @@
 package com.hackathon.wizards.service;
 
+import com.hackathon.wizards.dto.AlertChart;
+import com.hackathon.wizards.dto.AlertDataPoint;
 import com.hackathon.wizards.dto.DeviceData;
 import com.hackathon.wizards.dto.ParamDataPoint;
 import com.hackathon.wizards.dto.ReadingRequest;
 import com.hackathon.wizards.entity.Reading;
 import com.hackathon.wizards.repository.ReadingRepository;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -222,5 +229,32 @@ public class ReadingServiceImpl implements ReadingService {
             throw ex;
         }
         return deviceData;
+    }
+
+    @Override
+    public AlertChart getAlertsChart(Integer days) {
+        LocalDate localDate = LocalDate.now().minusDays(days);
+        LocalDateTime localDateTime = LocalDateTime.of(localDate.getYear(), localDate.getMonth(), localDate.getDayOfMonth(), 0, 0);
+        List<Alert> alerts = alertRepository.findAllByCreatedAtGreaterThan(localDateTime);
+        Map<LocalDateTime, Integer> map = new HashMap<>();
+
+        LocalDateTime start = LocalDateTime.of(localDate.getYear(), localDate.getMonth(), localDate.getDayOfMonth(), 0, 0);
+        while(start.isBefore(LocalDateTime.now())) {
+            map.put(start, 0);
+            start = start.plusDays(1);
+        }
+        for(Alert alert: alerts) {
+            LocalDateTime alertTime = alert.getCreatedAt();
+            LocalDateTime floorTime = LocalDateTime.of(alertTime.getYear(), alertTime.getMonth(), alertTime.getDayOfMonth(), 0, 0);
+            map.putIfAbsent(floorTime, 0);
+            map.put(floorTime, map.get(floorTime) + 1);
+        }
+        AlertChart alertChart = new AlertChart();
+        List<AlertDataPoint> alertDataPointList = new ArrayList<>();
+        for(LocalDateTime dateTime : map.keySet()) {
+            alertDataPointList.add(new AlertDataPoint(dateTime, map.get(dateTime)));
+        }
+        alertChart.setAlerts(alertDataPointList);
+        return alertChart;
     }
 }
