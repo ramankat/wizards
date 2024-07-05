@@ -76,7 +76,7 @@ public class ReadingServiceImpl implements ReadingService {
 
         }
         existingReading.setDeviceId(readingRequest.getDeviceId());
-        existingReading.setAqi(readingRequest.getAqi() + delta);
+        existingReading.setAqi(readingRequest.getAqi().intValue() + delta);
         existingReading.setPressure(readingRequest.getPressure() + delta);
         existingReading.setTemperature(readingRequest.getTemperature() + delta);
         existingReading.setHumidity(readingRequest.getHumidity() + delta);
@@ -96,7 +96,7 @@ public class ReadingServiceImpl implements ReadingService {
 
         ReadingAud readingAud = new ReadingAud();
         readingAud.setDeviceId(readingRequest.getDeviceId());
-        readingAud.setAqi(readingRequest.getAqi() + delta);
+        readingAud.setAqi(readingRequest.getAqi().intValue() + delta);
         readingAud.setPressure(readingRequest.getPressure() + delta);
         readingAud.setTemperature(readingRequest.getTemperature() + delta);
         readingAud.setHumidity(readingRequest.getHumidity() + delta);

@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 public class ReadingRequest {
 
     private Integer deviceId = 1;
-    private Integer aqi;
+    private Double aqi;
     private Double temperature;
     private Double pressure;
     private Double longitude;
