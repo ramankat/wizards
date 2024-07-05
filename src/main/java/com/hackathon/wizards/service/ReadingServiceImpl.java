@@ -285,6 +285,7 @@ public class ReadingServiceImpl implements ReadingService {
             alertDataPointList.add(new AlertDataPoint(dateTime, map.get(dateTime)));
         }
         alertChart.setAlerts(alertDataPointList);
+        Collections.sort(alertChart.getAlerts(), Comparator.comparing(AlertDataPoint::getDate));
         return alertChart;
     }
 
