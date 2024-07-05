@@ -76,10 +76,10 @@ public class ReadingServiceImpl implements ReadingService {
 
         }
         existingReading.setDeviceId(readingRequest.getDeviceId());
-        existingReading.setAqi(readingRequest.getAqi().intValue() + delta);
-        existingReading.setPressure(readingRequest.getPressure() + delta);
-        existingReading.setTemperature(readingRequest.getTemperature() + delta);
-        existingReading.setHumidity(readingRequest.getHumidity() + delta);
+        existingReading.setAqi(Math.abs(readingRequest.getAqi().intValue() + delta));
+        existingReading.setPressure(Math.abs(readingRequest.getPressure() + delta));
+        existingReading.setTemperature(Math.abs(readingRequest.getTemperature() + delta));
+        existingReading.setHumidity(Math.abs(readingRequest.getHumidity() + delta));
         existingReading.setLongitude(readingRequest.getLongitude());
         existingReading.setLatitude(readingRequest.getLatitude());
         existingReading.setSosAlert(readingRequest.getSosAlert());
@@ -96,10 +96,10 @@ public class ReadingServiceImpl implements ReadingService {
 
         ReadingAud readingAud = new ReadingAud();
         readingAud.setDeviceId(readingRequest.getDeviceId());
-        readingAud.setAqi(readingRequest.getAqi().intValue() + delta);
-        readingAud.setPressure(readingRequest.getPressure() + delta);
-        readingAud.setTemperature(readingRequest.getTemperature() + delta);
-        readingAud.setHumidity(readingRequest.getHumidity() + delta);
+        readingAud.setAqi(Math.abs(readingRequest.getAqi().intValue() + delta));
+        readingAud.setPressure(Math.abs(readingRequest.getPressure() + delta));
+        readingAud.setTemperature(Math.abs(readingRequest.getTemperature() + delta));
+        readingAud.setHumidity(Math.abs(readingRequest.getHumidity() + delta));
         readingAud.setLongitude(readingRequest.getLongitude());
         readingAud.setLatitude(readingRequest.getLatitude());
         readingAud.setSosAlert(readingRequest.getSosAlert());
