@@ -223,10 +223,10 @@ public class ReadingServiceImpl implements ReadingService {
             double humiditySum = 0.0d;
             double pressureSum = 0.0d;
             readingAuds.stream().sorted(Comparator.comparing(ReadingAud::getCreatedAt)).forEach(readingAud -> {
-                deviceData.getHumidityGraph().add(new ParamDataPoint(readingAud.getCreatedAt(), readingAud.getHumidity()));
-                deviceData.getTemperatureGraph().add(new ParamDataPoint(readingAud.getCreatedAt(), readingAud.getTemperature()));
-                deviceData.getPressureGraph().add(new ParamDataPoint(readingAud.getCreatedAt(), readingAud.getPressure()));
-                deviceData.getAqiGraph().add(new ParamDataPoint(readingAud.getCreatedAt(), Double.valueOf(readingAud.getAqi())));
+                deviceData.getHumidityGraph().add(new ParamDataPoint(readingAud.getCreatedAt(), roundOff(readingAud.getHumidity(), 2)));
+                deviceData.getTemperatureGraph().add(new ParamDataPoint(readingAud.getCreatedAt(), roundOff(readingAud.getTemperature(), 2)));
+                deviceData.getPressureGraph().add(new ParamDataPoint(readingAud.getCreatedAt(), roundOff(readingAud.getPressure(), 2)));
+                deviceData.getAqiGraph().add(new ParamDataPoint(readingAud.getCreatedAt(), roundOff(Double.valueOf(readingAud.getAqi()), 2)));
             });
             List<Double> aqiList = new ArrayList<>();
             List<Double> temparatureList = new ArrayList<>();
@@ -365,7 +365,7 @@ public class ReadingServiceImpl implements ReadingService {
         if (n % 2 != 0)
             return list.get(n/2);
 
-        return (double)(list.get((n - 1) / 2) + list.get(n / 2)) / 2.0;
+        return roundOff((double)(list.get((n - 1) / 2) + list.get(n / 2)) / 2.0, 2);
     }
 
     public static double findMean(List<Double> list)
@@ -378,6 +378,10 @@ public class ReadingServiceImpl implements ReadingService {
         for (int i = 0; i < n; i++)
             sum += list.get(i);
 
-        return (double)sum / (double)n;
+        return roundOff((double)sum / (double)n, 2);
+    }
+
+    public static double roundOff(Double value, Integer precision) {
+        return Math.floor(Math.round(value * Math.pow(10, precision)) / Math.pow(10, precision));
     }
 }
