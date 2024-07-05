@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface ReadingService {
 
-    void saveReading(ReadingRequest readingRequest);
+    Boolean saveReading(ReadingRequest readingRequest);
 
     List<Reading> getAllReadings();
 

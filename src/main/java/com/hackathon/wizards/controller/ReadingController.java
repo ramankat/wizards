@@ -26,9 +26,8 @@ public class ReadingController {
     private ReadingService readingService;
 
     @PostMapping(path = "", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> saveAddressInfo(ReadingRequest readingRequest) {
-        readingService.saveReading(readingRequest);
-        return new ResponseEntity<>("SUCCESS", HttpStatus.OK);
+    public ResponseEntity<Boolean> saveAddressInfo(ReadingRequest readingRequest) {
+        return new ResponseEntity<>(readingService.saveReading(readingRequest), HttpStatus.OK);
     }
 
     @GetMapping(path = "", produces = MediaType.APPLICATION_JSON_VALUE)

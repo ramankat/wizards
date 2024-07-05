@@ -59,17 +59,17 @@ public class ReadingServiceImpl implements ReadingService {
 
     @Override
     @Transactional
-    public void saveReading(ReadingRequest readingRequest) {
-        saveReadingDate(readingRequest, 0);
+    public Boolean saveReading(ReadingRequest readingRequest) {
+        boolean isAlert = saveReadingDate(readingRequest, 0);
         Random random = new Random();
         readingRequest.setDeviceId(2);
         saveReadingDate(readingRequest, random.ints(-10, 10).findFirst().getAsInt());
         readingRequest.setDeviceId(3);
         saveReadingDate(readingRequest, random.ints(-10, 10).findFirst().getAsInt());
-
+        return isAlert;
     }
 
-    private void saveReadingDate(ReadingRequest readingRequest, int delta){
+    private boolean saveReadingDate(ReadingRequest readingRequest, int delta){
         Reading existingReading = readingRepository.findAllByDeviceId(readingRequest.getDeviceId());
         if(Objects.isNull(existingReading)){
             existingReading = new Reading();
@@ -106,6 +106,7 @@ public class ReadingServiceImpl implements ReadingService {
         readingAud.setTimestamp(LocalDateTime.now());
         readingAud.setAltitude(readingRequest.getAltitude());
         readingAuditRepository.save(readingAud);
+        return sendAlertFlag;
     }
 
     private void populateHeatData(Reading existingReading) {
