@@ -27,7 +27,11 @@ public class ReadingController {
 
     @PostMapping(path = "", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Boolean> saveAddressInfo(ReadingRequest readingRequest) {
-        return new ResponseEntity<>(readingService.saveReading(readingRequest), HttpStatus.NOT_ACCEPTABLE);
+        Boolean alert = readingService.saveReading(readingRequest);
+        if(alert == null || !alert) {
+            return new ResponseEntity<>(alert, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(alert, HttpStatus.NOT_ACCEPTABLE);
     }
 
     @GetMapping(path = "", produces = MediaType.APPLICATION_JSON_VALUE)
