@@ -63,6 +63,7 @@ public class ReadingServiceImpl implements ReadingService {
         boolean isAlert = saveReadingDate(readingRequest, 0);
         Random random = new Random();
         readingRequest.setDeviceId(2);
+        readingRequest.setSosAlert(false);
         saveReadingDate(readingRequest, random.ints(-10, 10).findFirst().getAsInt());
         readingRequest.setDeviceId(3);
         saveReadingDate(readingRequest, random.ints(-10, 10).findFirst().getAsInt());
