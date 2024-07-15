@@ -7,9 +7,9 @@ spring:
   application:
     name: wizards
   datasource:
-    url: jdbc:postgresql://cat670aihdrkt1.cluster-czrs8kj4isg7.us-east-1.rds.amazonaws.com:5432/ddiiknknre9vvs?sslmode=require
-    username: u7rfuaauju6l63
-    password: pe37f56daa3b50383b3f8c69e42dacb4a674696d2001495ea0e48c80c78b84e50
+    url: jdbc:postgresql://c6sfjnr30ch74e.cluster-czrs8kj4isg7.us-east-1.rds.amazonaws.com:5432/d7qgk2qentnd25?sslmode=require
+    username: u6ge3dk3fa60hp
+    password: pf68b0cb4ae4056a89849b744955caab5ac6dc87dbd24069562a0fda16f6d2e31
     hikari:
       connection-timeout: 20000
       maximum-pool-size: 8
