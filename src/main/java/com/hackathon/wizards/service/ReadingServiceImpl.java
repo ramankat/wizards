@@ -76,7 +76,8 @@ public class ReadingServiceImpl implements ReadingService {
         existingReading.setVoc(Math.abs(readingRequest.getVoc() + delta));
         existingReading.setHeatIndex(Math.abs(readingRequest.getHeatIndex() + delta));
         existingReading.setCo2(Math.abs(readingRequest.getCo2() + delta));
-        existingReading.setPressure(Math.abs(readingRequest.getPressure() + delta));
+        existingReading.setPressure(readingRequest.getDeviceId() != 1 ? Math.abs(readingRequest.getPressure() + delta * 30) :
+                    Math.abs(readingRequest.getPressure() + delta));
         existingReading.setTemperature(Math.abs(readingRequest.getTemperature() + delta));
         existingReading.setHumidity(Math.abs(readingRequest.getHumidity() + delta));
         existingReading.setLongitude(readingRequest.getLongitude());
@@ -99,7 +100,8 @@ public class ReadingServiceImpl implements ReadingService {
         readingAud.setVoc(Math.abs(readingRequest.getVoc() + delta));
         readingAud.setHeatIndex(Math.abs(readingRequest.getHeatIndex() + delta));
         readingAud.setCo2(Math.abs(readingRequest.getCo2() + delta));
-        readingAud.setPressure(Math.abs(readingRequest.getPressure() + delta));
+        readingAud.setPressure(readingRequest.getDeviceId() != 1 ? Math.abs(readingRequest.getPressure() + delta * 30) :
+                Math.abs(readingRequest.getPressure() + delta));
         readingAud.setTemperature(Math.abs(readingRequest.getTemperature() + delta));
         readingAud.setHumidity(Math.abs(readingRequest.getHumidity() + delta));
         readingAud.setLongitude(readingRequest.getLongitude());
@@ -112,6 +114,9 @@ public class ReadingServiceImpl implements ReadingService {
     }
 
     private void populateHeatData(Reading existingReading) {
+        if(existingReading.getLatitude() == 0.0 || existingReading.getLongitude() == 0.0){
+            return;
+        }
         HeatMapData heatMapData = new HeatMapData();
 
         heatMapData.setDeviceId(existingReading.getDeviceId());
@@ -471,6 +476,9 @@ public class ReadingServiceImpl implements ReadingService {
     }
 
     public static double roundOff(Double value, Integer precision) {
+        if(value == null){
+            return 0.0;
+        }
         return Math.floor(Math.round(value * Math.pow(10, precision)) / Math.pow(10, precision));
     }
 }
