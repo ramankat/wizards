@@ -42,6 +42,11 @@ public class ReadingController {
         return new ResponseEntity<>(readingService.getAllThresholdValue(deviceId == null ? 1 : deviceId), HttpStatus.OK);
     }
 
+    @PostMapping(path = "/threshold/{deviceId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<AlertThreshold> addAllThresholdValue(@PathVariable Integer deviceId, @RequestBody ParameterThresholdDto parameterThresholdDto) {
+        return new ResponseEntity<>(readingService.addAllThresholdValue(deviceId == null ? 1 : deviceId, parameterThresholdDto), HttpStatus.OK);
+    }
+
     @GetMapping(path = "/{id}/{dataPoints}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<DeviceData> getReadingDetail(@PathVariable Long id, @PathVariable Integer dataPoints) {
         return new ResponseEntity<>(readingService.getReadingDetail(id, dataPoints), HttpStatus.OK);

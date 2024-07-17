@@ -19,4 +19,6 @@ public interface ReadingService {
 
     AlertThreshold getAllThresholdValue(Integer deviceId);
 
+    AlertThreshold addAllThresholdValue(Integer deviceId, ParameterThresholdDto parameterThresholdDto);
+
 }

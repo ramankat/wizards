@@ -436,6 +436,33 @@ public class ReadingServiceImpl implements ReadingService {
 
     }
 
+    @Override
+    public AlertThreshold addAllThresholdValue(Integer deviceId, ParameterThresholdDto parameterThresholdDto) {
+        AlertThreshold existingAlertThreshold = alertThresholdRepository.findAllByDeviceId(deviceId);
+        if(existingAlertThreshold == null){
+            existingAlertThreshold = new AlertThreshold();
+        }
+        if(parameterThresholdDto.getAqiThreshold() != null){
+            existingAlertThreshold.setAqiThresholdValue(parameterThresholdDto.getAqiThreshold());
+        }
+        if(parameterThresholdDto.getHumidityThreshold() != null){
+            existingAlertThreshold.setHumidityThresholdValue(parameterThresholdDto.getHumidityThreshold());
+        }
+        if(parameterThresholdDto.getVocThreshold() != null){
+            existingAlertThreshold.setVocThresholdValue(parameterThresholdDto.getVocThreshold());
+        }
+        if(parameterThresholdDto.getTemperatureThreshold() != null){
+            existingAlertThreshold.setTemperatureThresholdValue(parameterThresholdDto.getTemperatureThreshold());
+        }
+        if(parameterThresholdDto.getPressureThreshold() != null){
+            existingAlertThreshold.setPressureThresholdValue(parameterThresholdDto.getPressureThreshold());
+        }
+        if(parameterThresholdDto.getCo2Threshold() != null){
+            existingAlertThreshold.setCo2(parameterThresholdDto.getCo2Threshold());
+        }
+        return alertThresholdRepository.save(existingAlertThreshold);
+    }
+
     public static double findMedian(List<Double> list)
     {
         if(list == null || list.size() == 0) {
