@@ -4,11 +4,9 @@ import com.hackathon.wizards.dto.*;
 import com.hackathon.wizards.entity.Reading;
 import com.hackathon.wizards.repository.ReadingRepository;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,7 +14,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import java.util.*;
-import java.util.stream.Collectors;
+
 import lombok.extern.slf4j.Slf4j;
 import com.hackathon.wizards.entity.*;
 import com.hackathon.wizards.repository.*;
@@ -25,9 +23,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 
 @Service
 @Slf4j
@@ -436,13 +431,8 @@ public class ReadingServiceImpl implements ReadingService {
     }
 
     @Override
-    public ParameterThresoldDto getAllThesholdValue() {
-        AlertThreshold  alertThreshold = alertThresholdRepository.findAllByDeviceId(1);
-        return ParameterThresoldDto.builder()
-                .humidityThresold(alertThreshold.getHumidityThresholdValue())
-                .pressureThresold(alertThreshold.getPressureThresholdValue())
-                .temperatureThresold(alertThreshold.getTemperatureThresholdValue())
-                .build();
+    public AlertThreshold getAllThresholdValue(Integer deviceId) {
+        return alertThresholdRepository.findAllByDeviceId(deviceId);
 
     }
 

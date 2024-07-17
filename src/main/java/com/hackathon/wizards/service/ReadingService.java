@@ -1,6 +1,7 @@
 package com.hackathon.wizards.service;
 
 import com.hackathon.wizards.dto.*;
+import com.hackathon.wizards.entity.AlertThreshold;
 import com.hackathon.wizards.entity.Reading;
 import java.util.List;
 
@@ -16,6 +17,6 @@ public interface ReadingService {
 
     MeanData getMeanChart(Integer days);
 
-    ParameterThresoldDto getAllThesholdValue();
+    AlertThreshold getAllThresholdValue(Integer deviceId);
 
 }
