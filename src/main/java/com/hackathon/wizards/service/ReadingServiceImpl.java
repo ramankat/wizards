@@ -15,6 +15,8 @@ import java.util.Optional;
 
 import java.util.*;
 
+import com.twilio.Twilio;
+import com.twilio.rest.api.v2010.account.Message;
 import lombok.extern.slf4j.Slf4j;
 import com.hackathon.wizards.entity.*;
 import com.hackathon.wizards.repository.*;
@@ -23,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @Slf4j
@@ -46,6 +49,12 @@ public class ReadingServiceImpl implements ReadingService {
     @Autowired
     private AlertAttributeMappingRepository alertAttributeMappingRepository;
 
+    @Autowired
+    private AppConfigRepository appConfigRepository;
+
+    public static final String ACCOUNT_SID = "AC7e34096099437c838fc46a37d03a1ac3";
+    public static final String AUTH_TOKEN = "b7db3703a216a5916754c8fb3cf7a89f";
+
 
     @Override
     @Transactional
@@ -59,6 +68,39 @@ public class ReadingServiceImpl implements ReadingService {
         saveReadingDate(readingRequest, random.ints(-10, 10).findFirst().getAsInt());
         return isAlert;
     }
+
+    void sendSms(String body){
+        try{
+            AppConfig appConfig = appConfigRepository.findAllByKey("ALERT_NUMBERS");
+            String val = appConfig.getValue();
+            if(val == null){
+                return;
+            }
+            List<String> toNumbers = getListFromCommaSeparatedString(val);
+
+            // Find your Account Sid and Token at twilio.com/console
+            Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
+            for (String to : toNumbers) {
+                Message message = Message.creator(
+                        new com.twilio.type.PhoneNumber("whatsapp:+91" + to),
+                        new com.twilio.type.PhoneNumber("whatsapp:+14155238886"),
+                        body
+                ).create();
+                System.out.println("Sent message with SID: " + message.getSid() + " to " + to);
+            }
+        }catch (Exception e){
+            log.error("Error while sending message");
+        }
+
+    }
+
+    public static List<String> getListFromCommaSeparatedString(String commaSeparatedString) {
+        if (commaSeparatedString == null || commaSeparatedString.isEmpty()) {
+            return Arrays.asList();
+        }
+        return Arrays.asList(commaSeparatedString.split("\\s*,\\s*"));
+    }
+
 
     private boolean saveReadingDate(ReadingRequest readingRequest, int delta){
         Reading existingReading = readingRepository.findAllByDeviceId(readingRequest.getDeviceId());
@@ -128,6 +170,7 @@ public class ReadingServiceImpl implements ReadingService {
         alert.setDeviceId(existingReading.getDeviceId());
         List<AlertAttributeMapping> alertAttributeMappingList = new ArrayList<>();
         boolean isAlert = false;
+        String alertMessage = "An alert has been detected for Device Id : 1, for below parameter : ";
         if(alertThreshold == null){
             return false;
         }
@@ -138,6 +181,7 @@ public class ReadingServiceImpl implements ReadingService {
             alertAttributeMapping.setThresholdValue(alertThreshold.getAqiThresholdValue());
             alertAttributeMappingList.add(alertAttributeMapping);
 
+            alertMessage = alertMessage + String.format(" AQI breached the threshold :  %s ", alertThreshold.getAqiThresholdValue());
 //            alert.setAlertType("AQI");
 //            alert.setThresholdValue(Double.valueOf(existingReading.getAqi()));
             isAlert = true;
@@ -149,6 +193,7 @@ public class ReadingServiceImpl implements ReadingService {
             alertAttributeMapping.setThresholdValue(alertThreshold.getVocThresholdValue());
             alertAttributeMappingList.add(alertAttributeMapping);
 
+            alertMessage = alertMessage + String.format(" & VOC breached the threshold :  %s ", alertThreshold.getVocThresholdValue());
             isAlert = true;
         }
         if(existingReading.getHeatIndex() >= alertThreshold.getHeatIndexThresholdValue()){
@@ -157,7 +202,7 @@ public class ReadingServiceImpl implements ReadingService {
             alertAttributeMapping.setValue(Double.valueOf(existingReading.getHeatIndex()));
             alertAttributeMapping.setThresholdValue(alertThreshold.getHeatIndexThresholdValue());
             alertAttributeMappingList.add(alertAttributeMapping);
-
+            alertMessage = alertMessage + String.format("  & HEAT_INDEX breached the threshold :  %s ", alertThreshold.getHeatIndexThresholdValue());
             isAlert = true;
         }
         if(existingReading.getCo2() >= alertThreshold.getCo2()){
@@ -167,6 +212,7 @@ public class ReadingServiceImpl implements ReadingService {
             alertAttributeMapping.setThresholdValue(alertThreshold.getCo2());
             alertAttributeMappingList.add(alertAttributeMapping);
 
+            alertMessage = alertMessage + String.format("  & CO2 breached the threshold :  %s ", alertThreshold.getCo2());
             isAlert = true;
         }
         if(existingReading.getHumidity() >= alertThreshold.getHumidityThresholdValue()){
@@ -177,8 +223,7 @@ public class ReadingServiceImpl implements ReadingService {
             alertAttributeMapping.setThresholdValue(alertThreshold.getHumidityThresholdValue());
             alertAttributeMappingList.add(alertAttributeMapping);
 
-//            alert.setAlertType("HUMIDITY");
-//            alert.setThresholdValue(existingReading.getHumidity());
+            alertMessage = alertMessage + String.format("  & HUMIDITY breached the threshold :  %s ", alertThreshold.getHumidityThresholdValue());
             isAlert = true;
         }
         if(existingReading.getPressure() >= alertThreshold.getPressureThresholdValue()){
@@ -189,8 +234,7 @@ public class ReadingServiceImpl implements ReadingService {
             alertAttributeMapping.setThresholdValue(alertThreshold.getPressureThresholdValue());
             alertAttributeMappingList.add(alertAttributeMapping);
 
-//            alert.setAlertType("PRESSURE");
-//            alert.setThresholdValue(existingReading.getPressure());
+            alertMessage = alertMessage + String.format("  & PRESSURE breached the threshold :  %s ", alertThreshold.getPressureThresholdValue());
             isAlert = true;
         }
         if(existingReading.getTemperature() >= alertThreshold.getTemperatureThresholdValue()){
@@ -203,6 +247,7 @@ public class ReadingServiceImpl implements ReadingService {
 
 //            alert.setAlertType("TEMPERATURE");
 //            alert.setThresholdValue(existingReading.getTemperature());
+            alertMessage = alertMessage + String.format("  & TEMPERATURE breached the threshold :  %s ", alertThreshold.getTemperatureThresholdValue());
             isAlert = true;
         }
 
@@ -217,6 +262,11 @@ public class ReadingServiceImpl implements ReadingService {
                 alertAttributeMapping.setAlertId(finalAlert);
             });
             alertAttributeMappingRepository.saveAll(alertAttributeMappingList);
+            alertMessage = alertMessage + " Please check on priority ";
+            if(existingReading.getDeviceId() == 1){
+                String finalAlertMessage = alertMessage;
+                CompletableFuture.runAsync(() -> sendSms(finalAlertMessage));
+            }
         }
         return isAlert;
 
