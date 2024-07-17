@@ -53,10 +53,10 @@ public class ReadingServiceImpl implements ReadingService {
     @Autowired
     private AppConfigRepository appConfigRepository;
 
-    @Value("${twilio.account.sid}")
-    public String ACCOUNT_SID;
-    @Value("${twilio.auth.token}")
-    public String AUTH_TOKEN;
+//    @Value("${twilio.account.sid}")
+//    public String ACCOUNT_SID;
+//    @Value("${twilio.auth.token}")
+//    public String AUTH_TOKEN;
 
 
     @Override
@@ -75,14 +75,18 @@ public class ReadingServiceImpl implements ReadingService {
     void sendSms(String body){
         try{
             AppConfig appConfig = appConfigRepository.findAllByKey("ALERT_NUMBERS");
+            AppConfig appConfig1 = appConfigRepository.findAllByKey("ACCOUNT_SID");
+            AppConfig appConfig2 = appConfigRepository.findAllByKey("AUTH_TOKEN");
+            AppConfig appConfig3 = appConfigRepository.findAllByKey("SMS_ENABLED");
+
             String val = appConfig.getValue();
-            if(val == null){
+            if(val == null || !Boolean.parseBoolean(appConfig3.getValue())){
                 return;
             }
             List<String> toNumbers = getListFromCommaSeparatedString(val);
 
             // Find your Account Sid and Token at twilio.com/console
-            Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
+            Twilio.init(appConfig1.getValue(), appConfig2.getValue());
             for (String to : toNumbers) {
                 Message message = Message.creator(
                         new com.twilio.type.PhoneNumber("whatsapp:+91" + to),

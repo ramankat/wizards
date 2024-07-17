@@ -20,9 +20,3 @@ spring:
       hibernate:
         default_schema: public
     hibernate.ddl-auto: update
-
-twilio:
-  auth:
-    token: b7db3703a216a5916754c8fb3cf7a89f
-  account:
-    sid: AC7e34096099437c838fc46a37d03a1ac3
