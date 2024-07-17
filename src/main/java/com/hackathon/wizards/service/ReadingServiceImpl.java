@@ -22,6 +22,7 @@ import com.hackathon.wizards.entity.*;
 import com.hackathon.wizards.repository.*;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -52,8 +53,10 @@ public class ReadingServiceImpl implements ReadingService {
     @Autowired
     private AppConfigRepository appConfigRepository;
 
-    public static final String ACCOUNT_SID = "AC7e34096099437c838fc46a37d03a1ac3";
-    public static final String AUTH_TOKEN = "b7db3703a216a5916754c8fb3cf7a89f";
+    @Value("${twilio.account.sid}")
+    public String ACCOUNT_SID;
+    @Value("${twilio.auth.token}")
+    public String AUTH_TOKEN;
 
 
     @Override
