@@ -1,10 +1,7 @@
 package com.hackathon.wizards.controller;
 
 
-import com.hackathon.wizards.dto.AlertChart;
-import com.hackathon.wizards.dto.DeviceData;
-import com.hackathon.wizards.dto.MeanData;
-import com.hackathon.wizards.dto.ReadingRequest;
+import com.hackathon.wizards.dto.*;
 import com.hackathon.wizards.entity.Reading;
 import com.hackathon.wizards.service.ReadingService;
 import java.util.List;
@@ -37,6 +34,11 @@ public class ReadingController {
     @GetMapping(path = "", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<Reading>> getAllReadings() {
         return new ResponseEntity<>(readingService.getAllReadings(), HttpStatus.OK);
+    }
+
+    @GetMapping(path = "/threshold", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ParameterThresoldDto> getAllThresholdValue() {
+        return new ResponseEntity<>(readingService.getAllThesholdValue(), HttpStatus.OK);
     }
 
     @GetMapping(path = "/{id}/{dataPoints}", produces = MediaType.APPLICATION_JSON_VALUE)

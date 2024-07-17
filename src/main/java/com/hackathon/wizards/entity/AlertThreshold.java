@@ -22,6 +22,15 @@ public class AlertThreshold {
     @Column(name = "aqi_threshold_value", precision = 10)
     private Double aqiThresholdValue;
 
+    @Column(name = "voc_threshold_value", precision = 10)
+    private Double vocThresholdValue;
+
+    @Column(name = "heat_index_threshold_value", precision = 10)
+    private Double heatIndexThresholdValue;
+
+    @Column(name = "co2", precision = 10)
+    private Double co2;
+
     @Column(name = "humidity_threshold_value", precision = 10)
     private Double humidityThresholdValue;
 

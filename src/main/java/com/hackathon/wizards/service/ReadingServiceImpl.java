@@ -1,11 +1,6 @@
 package com.hackathon.wizards.service;
 
-import com.hackathon.wizards.dto.AlertChart;
-import com.hackathon.wizards.dto.AlertDataPoint;
-import com.hackathon.wizards.dto.DeviceData;
-import com.hackathon.wizards.dto.MeanData;
-import com.hackathon.wizards.dto.ParamDataPoint;
-import com.hackathon.wizards.dto.ReadingRequest;
+import com.hackathon.wizards.dto.*;
 import com.hackathon.wizards.entity.Reading;
 import com.hackathon.wizards.repository.ReadingRepository;
 import java.time.LocalDate;
@@ -78,6 +73,9 @@ public class ReadingServiceImpl implements ReadingService {
         }
         existingReading.setDeviceId(readingRequest.getDeviceId());
         existingReading.setAqi(Math.abs(readingRequest.getAqi().intValue() + delta));
+        existingReading.setVoc(Math.abs(readingRequest.getVoc() + delta));
+        existingReading.setHeatIndex(Math.abs(readingRequest.getHeatIndex() + delta));
+        existingReading.setCo2(Math.abs(readingRequest.getCo2() + delta));
         existingReading.setPressure(Math.abs(readingRequest.getPressure() + delta));
         existingReading.setTemperature(Math.abs(readingRequest.getTemperature() + delta));
         existingReading.setHumidity(Math.abs(readingRequest.getHumidity() + delta));
@@ -98,6 +96,9 @@ public class ReadingServiceImpl implements ReadingService {
         ReadingAud readingAud = new ReadingAud();
         readingAud.setDeviceId(readingRequest.getDeviceId());
         readingAud.setAqi(Math.abs(readingRequest.getAqi().intValue() + delta));
+        readingAud.setVoc(Math.abs(readingRequest.getVoc() + delta));
+        readingAud.setHeatIndex(Math.abs(readingRequest.getHeatIndex() + delta));
+        readingAud.setCo2(Math.abs(readingRequest.getCo2() + delta));
         readingAud.setPressure(Math.abs(readingRequest.getPressure() + delta));
         readingAud.setTemperature(Math.abs(readingRequest.getTemperature() + delta));
         readingAud.setHumidity(Math.abs(readingRequest.getHumidity() + delta));
@@ -139,6 +140,33 @@ public class ReadingServiceImpl implements ReadingService {
 
 //            alert.setAlertType("AQI");
 //            alert.setThresholdValue(Double.valueOf(existingReading.getAqi()));
+            isAlert = true;
+        }
+        if(existingReading.getVoc() >= alertThreshold.getVocThresholdValue()){
+            AlertAttributeMapping alertAttributeMapping = new AlertAttributeMapping();
+            alertAttributeMapping.setAlertType("VOC");
+            alertAttributeMapping.setValue(Double.valueOf(existingReading.getVoc()));
+            alertAttributeMapping.setThresholdValue(alertThreshold.getVocThresholdValue());
+            alertAttributeMappingList.add(alertAttributeMapping);
+
+            isAlert = true;
+        }
+        if(existingReading.getHeatIndex() >= alertThreshold.getHeatIndexThresholdValue()){
+            AlertAttributeMapping alertAttributeMapping = new AlertAttributeMapping();
+            alertAttributeMapping.setAlertType("HEAT_INDEX");
+            alertAttributeMapping.setValue(Double.valueOf(existingReading.getHeatIndex()));
+            alertAttributeMapping.setThresholdValue(alertThreshold.getHeatIndexThresholdValue());
+            alertAttributeMappingList.add(alertAttributeMapping);
+
+            isAlert = true;
+        }
+        if(existingReading.getCo2() >= alertThreshold.getCo2()){
+            AlertAttributeMapping alertAttributeMapping = new AlertAttributeMapping();
+            alertAttributeMapping.setAlertType("CO2");
+            alertAttributeMapping.setValue(Double.valueOf(existingReading.getCo2()));
+            alertAttributeMapping.setThresholdValue(alertThreshold.getCo2());
+            alertAttributeMappingList.add(alertAttributeMapping);
+
             isAlert = true;
         }
         if(existingReading.getHumidity() >= alertThreshold.getHumidityThresholdValue()){
@@ -216,10 +244,16 @@ public class ReadingServiceImpl implements ReadingService {
             deviceData.setCurrReading(readingDetail.get());
             List<ReadingAud> readingAuds = readingAuditRepository.findLastNPoints(id, dataPoints);
             deviceData.setAqiGraph(new ArrayList<>());
+            deviceData.setVocGraph(new ArrayList<>());
+            deviceData.setHeatIndexGraph(new ArrayList<>());
+            deviceData.setCo2Graph(new ArrayList<>());
             deviceData.setTemperatureGraph(new ArrayList<>());
             deviceData.setHumidityGraph(new ArrayList<>());
             deviceData.setPressureGraph(new ArrayList<>());
             double aqiSum = 0.0d;
+            double vocSum = 0.0d;
+            double heatIndexSum = 0.0d;
+            double co2Sum = 0.0d;
             double temperatureSum = 0.0d;
             double humiditySum = 0.0d;
             double pressureSum = 0.0d;
@@ -228,18 +262,30 @@ public class ReadingServiceImpl implements ReadingService {
                 deviceData.getTemperatureGraph().add(new ParamDataPoint(readingAud.getCreatedAt(), roundOff(readingAud.getTemperature(), 2)));
                 deviceData.getPressureGraph().add(new ParamDataPoint(readingAud.getCreatedAt(), roundOff(readingAud.getPressure(), 2)));
                 deviceData.getAqiGraph().add(new ParamDataPoint(readingAud.getCreatedAt(), roundOff(Double.valueOf(readingAud.getAqi()), 2)));
+                deviceData.getVocGraph().add(new ParamDataPoint(readingAud.getCreatedAt(), roundOff(Double.valueOf(readingAud.getVoc()), 2)));
+                deviceData.getHeatIndexGraph().add(new ParamDataPoint(readingAud.getCreatedAt(), roundOff(Double.valueOf(readingAud.getHeatIndex()), 2)));
+                deviceData.getCo2Graph().add(new ParamDataPoint(readingAud.getCreatedAt(), roundOff(Double.valueOf(readingAud.getCo2()), 2)));
             });
             List<Double> aqiList = new ArrayList<>();
             List<Double> temparatureList = new ArrayList<>();
             List<Double> humidityList = new ArrayList<>();
             List<Double> pressureList = new ArrayList<>();
+            List<Double> vocList = new ArrayList<>();
+            List<Double> heatIndexList = new ArrayList<>();
+            List<Double> co2List = new ArrayList<>();
             for(ReadingAud readingAud : readingAuds) {
                 aqiList.add(Double.valueOf(readingAud.getAqi()));
                 temparatureList.add(readingAud.getTemperature());
                 humidityList.add(readingAud.getHumidity());
                 pressureList.add(readingAud.getPressure());
+                vocList.add(readingAud.getVoc());
+                heatIndexList.add(readingAud.getHeatIndex());
+                co2List.add(readingAud.getCo2());
 
                 aqiSum += readingAud.getAqi();
+                vocSum += readingAud.getVoc();
+                heatIndexSum += readingAud.getHeatIndex();
+                co2Sum += readingAud.getCo2();
                 temperatureSum += readingAud.getTemperature();
                 humiditySum += readingAud.getHumidity();
                 pressureSum += readingAud.getPressure();
@@ -297,6 +343,9 @@ public class ReadingServiceImpl implements ReadingService {
         Map<LocalDateTime, List<Double>> pressureMap = new HashMap<>();
         Map<LocalDateTime, List<Double>> temparatureMap = new HashMap<>();
         Map<LocalDateTime, List<Double>> aqiMap = new HashMap<>();
+        Map<LocalDateTime, List<Double>> vocMap = new HashMap<>();
+        Map<LocalDateTime, List<Double>> heatIndexMap = new HashMap<>();
+        Map<LocalDateTime, List<Double>> co2Map = new HashMap<>();
         Map<LocalDateTime, List<Double>> humidityMap = new HashMap<>();
 
         LocalDateTime start = LocalDateTime.of(localDate.getYear(), localDate.getMonth(), localDate.getDayOfMonth(), 0, 0);
@@ -304,6 +353,9 @@ public class ReadingServiceImpl implements ReadingService {
             pressureMap.put(start, new ArrayList<>());
             temparatureMap.put(start, new ArrayList<>());
             aqiMap.put(start, new ArrayList<>());
+            vocMap.put(start, new ArrayList<>());
+            heatIndexMap.put(start, new ArrayList<>());
+            co2Map.put(start, new ArrayList<>());
             humidityMap.put(start, new ArrayList<>());
             start = start.plusDays(1);
         }
@@ -317,12 +369,21 @@ public class ReadingServiceImpl implements ReadingService {
             temparatureMap.get(floorTime).add(readingAud.getTemperature());
             aqiMap.putIfAbsent(floorTime, new ArrayList<>());
             aqiMap.get(floorTime).add(Double.valueOf(readingAud.getAqi()));
+            vocMap.putIfAbsent(floorTime, new ArrayList<>());
+            vocMap.get(floorTime).add(readingAud.getVoc());
+            heatIndexMap.putIfAbsent(floorTime, new ArrayList<>());
+            heatIndexMap.get(floorTime).add(readingAud.getHeatIndex());
+            co2Map.putIfAbsent(floorTime, new ArrayList<>());
+            co2Map.get(floorTime).add(readingAud.getCo2());
             humidityMap.putIfAbsent(floorTime, new ArrayList<>());
             humidityMap.get(floorTime).add(readingAud.getHumidity());
         }
 
         MeanData meanData = new MeanData();
         meanData.setAqiGraph(new ArrayList<>());
+        meanData.setVocGraph(new ArrayList<>());
+        meanData.setHeatIndexGraph(new ArrayList<>());
+        meanData.setCo2Graph(new ArrayList<>());
         meanData.setTemperatureGraph(new ArrayList<>());
         meanData.setHumidityGraph(new ArrayList<>());
         meanData.setPressureGraph(new ArrayList<>());
@@ -331,6 +392,9 @@ public class ReadingServiceImpl implements ReadingService {
         meanData.setTemperatureMedianGraph(new ArrayList<>());
         meanData.setHumidityMedianGraph(new ArrayList<>());
         meanData.setPressureMedianGraph(new ArrayList<>());
+        meanData.setVocMedianGraph(new ArrayList<>());
+        meanData.setHeatIndexMedianGraph(new ArrayList<>());
+        meanData.setCo2MedianGraph(new ArrayList<>());
         for(LocalDateTime dateTime: pressureMap.keySet()) {
             double count = pressureMap.get(dateTime).size() * 1.0d;
             meanData.getPressureGraph().add(new ParamDataPoint(dateTime,
@@ -339,6 +403,12 @@ public class ReadingServiceImpl implements ReadingService {
                     findMean(temparatureMap.get(dateTime))));
             meanData.getAqiGraph().add(new ParamDataPoint(dateTime,
                     findMean(aqiMap.get(dateTime))));
+            meanData.getVocGraph().add(new ParamDataPoint(dateTime,
+                    findMean(vocMap.get(dateTime))));
+            meanData.getHeatIndexGraph().add(new ParamDataPoint(dateTime,
+                    findMean(heatIndexMap.get(dateTime))));
+            meanData.getCo2Graph().add(new ParamDataPoint(dateTime,
+                    findMean(co2Map.get(dateTime))));
             meanData.getHumidityGraph().add(new ParamDataPoint(dateTime,
                     findMean(humidityMap.get(dateTime))));
 
@@ -348,10 +418,27 @@ public class ReadingServiceImpl implements ReadingService {
                     findMedian(temparatureMap.get(dateTime))));
             meanData.getAqiMedianGraph().add(new ParamDataPoint(dateTime,
                     findMedian(aqiMap.get(dateTime))));
+            meanData.getVocMedianGraph().add(new ParamDataPoint(dateTime,
+                    findMedian(vocMap.get(dateTime))));
+            meanData.getHeatIndexMedianGraph().add(new ParamDataPoint(dateTime,
+                    findMedian(heatIndexMap.get(dateTime))));
+            meanData.getCo2MedianGraph().add(new ParamDataPoint(dateTime,
+                    findMedian(co2Map.get(dateTime))));
             meanData.getHumidityMedianGraph().add(new ParamDataPoint(dateTime,
                     findMedian(humidityMap.get(dateTime))));
         }
         return meanData;
+    }
+
+    @Override
+    public ParameterThresoldDto getAllThesholdValue() {
+        AlertThreshold  alertThreshold = alertThresholdRepository.findAllByDeviceId(1);
+        return ParameterThresoldDto.builder()
+                .humidityThresold(alertThreshold.getHumidityThresholdValue())
+                .pressureThresold(alertThreshold.getPressureThresholdValue())
+                .temperatureThresold(alertThreshold.getTemperatureThresholdValue())
+                .build();
+
     }
 
     public static double findMedian(List<Double> list)

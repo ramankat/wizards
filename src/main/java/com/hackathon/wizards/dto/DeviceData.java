@@ -11,6 +11,9 @@ public class DeviceData {
     private List<ParamDataPoint> temperatureGraph;
     private List<ParamDataPoint> pressureGraph;
     private List<ParamDataPoint> aqiGraph;
+    private List<ParamDataPoint> vocGraph;
+    private List<ParamDataPoint> heatIndexGraph;
+    private List<ParamDataPoint> co2Graph;
 
 
     private Double avgHumidity;

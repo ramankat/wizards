@@ -32,6 +32,15 @@ public class Reading {
     @Column(name = "aqi")
     private Integer aqi;
 
+    @Column(name = "voc")
+    private Double voc;
+
+    @Column(name = "heat_index")
+    private Double heatIndex;
+
+    @Column(name = "co2")
+    private Double co2;
+
     @Column(name = "temperature", precision = 5)
     private Double temperature;
 
