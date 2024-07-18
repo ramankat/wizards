@@ -335,7 +335,7 @@ public class ReadingServiceImpl implements ReadingService {
                 deviceData.getTemperatureGraph().add(new ParamDataPoint(readingAud.getCreatedAt(), roundOff(readingAud.getTemperature(), 2)));
                 deviceData.getPressureGraph().add(new ParamDataPoint(readingAud.getCreatedAt(), roundOff(readingAud.getPressure(), 2)));
                 deviceData.getAqiGraph().add(new ParamDataPoint(readingAud.getCreatedAt(), roundOff(Double.valueOf(readingAud.getAqi()), 2)));
-                deviceData.getVocGraph().add(new ParamDataPoint(readingAud.getCreatedAt(), roundOff(Double.valueOf(readingAud.getVoc()), 2)));
+                deviceData.getVocGraph().add(new ParamDataPoint(readingAud.getCreatedAt(), roundToPrecision(Double.valueOf(readingAud.getVoc()), 2)));
                 deviceData.getHeatIndexGraph().add(new ParamDataPoint(readingAud.getCreatedAt(), roundOff(Double.valueOf(readingAud.getHeatIndex()), 2)));
                 deviceData.getCo2Graph().add(new ParamDataPoint(readingAud.getCreatedAt(), roundOff(Double.valueOf(readingAud.getCo2()), 2)));
             });
