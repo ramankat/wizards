@@ -72,6 +72,11 @@ public class ReadingServiceImpl implements ReadingService {
         return isAlert;
     }
 
+    public static double roundToPrecision(double value, int precision) {
+        double scale = Math.pow(10, precision);
+        return Math.round(value * scale) / scale;
+    }
+
     void sendSms(String body){
         try{
             AppConfig appConfig = appConfigRepository.findAllByKey("ALERT_NUMBERS");
@@ -110,6 +115,7 @@ public class ReadingServiceImpl implements ReadingService {
 
 
     private boolean saveReadingDate(ReadingRequest readingRequest, int delta){
+        roundOffRequestTo2DecimalPlaces(readingRequest);
         Reading existingReading = readingRepository.findAllByDeviceId(readingRequest.getDeviceId());
         if(Objects.isNull(existingReading)){
             existingReading = new Reading();
@@ -155,6 +161,16 @@ public class ReadingServiceImpl implements ReadingService {
         readingAud.setAltitude(readingRequest.getAltitude());
         readingAuditRepository.save(readingAud);
         return sendAlertFlag;
+    }
+
+    private void roundOffRequestTo2DecimalPlaces(ReadingRequest readingRequest) {
+        readingRequest.setAqi(roundToPrecision(readingRequest.getAqi(), 2));
+        readingRequest.setVoc(roundToPrecision(readingRequest.getVoc(), 2));
+        readingRequest.setHeatIndex(roundToPrecision(readingRequest.getHeatIndex(), 2));
+        readingRequest.setCo2(roundToPrecision(readingRequest.getCo2(), 2));
+        readingRequest.setTemperature(roundToPrecision(readingRequest.getTemperature(), 2));
+        readingRequest.setPressure(roundToPrecision(readingRequest.getPressure(), 2));
+        readingRequest.setHumidity(roundToPrecision(readingRequest.getHumidity(), 2));
     }
 
     private void populateHeatData(Reading existingReading) {
